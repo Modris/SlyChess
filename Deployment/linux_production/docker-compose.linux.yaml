@@ -1,0 +1,129 @@
+version: "3.9"
+services:
+  chess_gateway:
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    #image: "modrisl/chess_gateway1.82_linux"
+    image: "modrisl/chess_gateway1.83_linux"
+    container_name: "gateway_spring"
+    ports:
+      - 127.0.0.1:8888:8888
+    environment:
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=https://slychess.com/auth/realms/chess_manager_client
+      - SPA_URL=${SPA_URL_SECRET}
+      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_SECRET}
+      - MANAGER_URL=${CHESS_MANAGER_URL}
+  backend:
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    #image:  modrisl/chess_backend1.364_linux
+    image:  modrisl/chess_backend1.4_linux
+    container_name: "backend_spring"
+    ports:
+      - 127.0.0.1:9091:9091
+    environment:
+      - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+
+
+  rabbitmq:
+    image:  modrisl/rabbitmq_stomp1.0_linux
+    container_name: "rabbitmq_stomp"
+    ports:
+      - 127.0.0.1:5672:5672
+      - 127.0.0.1:15672:15672
+      - 127.0.0.1:61613:61613
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+
+  manager:
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    #image: modrisl/chess_manager2.85_linux
+    image: modrisl/chess_manager2.87_linux
+    container_name: "manager_spring"
+    ports:
+      - 127.0.0.1:8181:8181
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-kc:3306/keycloak_db?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=https://slychess.com/auth/realms/chess_manager_client
+      - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+
+  vuejs:
+    image: modrisl/chess_frontend4.81_linux
+    container_name: "keycloak_frontend"
+    ports:
+      - 127.0.0.1:9090:9090
+
+  keycloak:
+    depends_on:
+      mysql-kc:
+        condition: service_healthy
+    image: modrisl/keycloak23.0.5_customtheme1.6_linux
+    container_name: "keycloak"
+    command: start --import-realm
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_USERNAME}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KC_HEALTH_ENABLED: "true"
+      KC_DB: mysql
+      KC_DB_SCHEMA: keycloak_db
+      KC_DB_USERNAME: ${MYSQL_USERNAME}
+      KC_DB_PASSWORD: ${MYSQL_PASSWORD}
+      KC_DB_URL_DATABASE: keycloak_db
+      KC_DB_URL_HOST: mysql-kc
+      KC_DB_URL_PORT: 3306
+      KC_PROXY: "edge"
+      KC_HOSTNAME_PATH: "/auth"
+      KC_HOSTNAME_STRICT_HTTPS: "true"
+      KC_HOSTNAME: slychess.com
+      KC_HOSTNAME_ADMIN: slychess.com/admin
+    ports:
+     - 8080:8080
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import
+
+  mysql-kc:
+    image: mysql:8.0
+    ports:
+      - 127.0.0.1:3307:3306
+    restart: always
+    environment:
+      MYSQL_DATABASE: keycloak_db
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./init-script.sql:/docker-entrypoint-initdb.d/init-script.sql
+      - keycloakdb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+
+volumes:
+  keycloakdb:
