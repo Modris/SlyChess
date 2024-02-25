@@ -16,6 +16,8 @@
 
 * Saving games into MySQL Database for logged users. Oauth2 Resource Server Chess_Manager decides that.
 
+* Backend-For-Frontend pattern to serve the frontend with Authorization without exposing JWT (Json Web Token). More about that below.
+
 # Project Images
 
 <div align="center">
@@ -49,7 +51,7 @@ Testing:
     Mock Tests for @RestControllers and @Valid constraint checks. Also used for @RestControllerAdvice response status tests.
     Integration Tests between JPA with MySQL done with TestContainers (real MySQL Database in a container. Which means no incompatibilities between production database and tested one (pit falls of H2 in memory testing)).
 
-# BFF pattern
+# Backend-For-Frontend (BFF) pattern
 
 All solutions stem from a problem. What is the problem that BFF pattern tries to solve? A security expert Philippe De Ryck says: 
 ["From a security perspective, it is virtually impossible to secure tokens in a frontend web application." And he recommends 
@@ -64,6 +66,6 @@ and all further requests to protected endpoints will be with this session cookie
   <img src="/project_images/oidc_flow.png" alt="oidc">
 </div>
 
-More details in Chess_Gateway github readme.
+More details in Chess_Gateway Folder README.
 
 # End
