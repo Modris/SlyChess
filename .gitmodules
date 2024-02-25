@@ -1,0 +1,12 @@
+[submodule "chess_game_backend"]
+	path = chess_game_backend
+	url = https://github.com/Modris/chess_backend
+[submodule "chess_game_manager"]
+	path = chess_game_manager
+	url = https://github.com/Modris/chess_manager
+[submodule "chess_gateway"]
+	path = chess_gateway
+	url = https://github.com/Modris/chess_gateway
+[submodule "chess_game_frontend"]
+	path = chess_game_frontend
+	url = https://github.com/Modris/chess_frontend
