@@ -3,38 +3,39 @@
 This has been tested to work for Windows 10. 
 
 # Set up guide.
-	
-	1) Open a terminal inside this folder and run the command 
-	"docker-compose up -d". 
-	If you changed passwords after launching it you might have to remove your volume 
-	with docker-compose down -v.
-	
-	2) Add "127.0.0.1 keycloak" in your hosts folder.
-		Windows: C:\Windows\System32\drivers\etc\hosts
-		Linux: /etc/hosts
 
-	This is a **KNOWN** Keycloak issue and there seems to be no better way. [Stackoverflow thread for more info.](https://stackoverflow.com/questions/57213611/keycloak-and-spring-boot-web-app-in-dockerized-environment).
+1) Open a terminal inside this folder and run the command 
+"docker-compose up -d". 
+If you changed passwords after launching it you might have to remove your volume 
+with docker-compose down -v.
+	
+2) Add "127.0.0.1 keycloak" in your hosts folder.
+	Windows: C:\Windows\System32\drivers\etc\hosts
 
-	3) <div align="center"> <img src="/steps/step1.png" alt="Step 1"> </div>
+	Linux: /etc/hosts
+
+This is a **KNOWN** Keycloak issue and there seems to be no better way. [Stackoverflow thread for more info.](https://stackoverflow.com/questions/57213611/keycloak-and-spring-boot-web-app-in-dockerized-environment)
+
+3) <div align="center"> <img src="/Deployment/localhost_only/steps/step1.png" alt="Step 1"> </div>
 	
-	4) <div align="center"> <img src="/steps/step2.png" alt="Step 2"> </div>
+4) <div align="center"> <img src="/Deployment/localhost_only/steps/step2.png" alt="Step 2"> </div>
 	
-	5) <div align="center"> <img src="/steps/step3.png" alt="Step 3"> </div>
+5) <div align="center"> <img src="/Deployment/localhost_only/steps/step3.png" alt="Step 3"> </div>
 	
-	6) <div align="center"> <img src="/steps/step4.png" alt="Step 4"> </div>
+6) <div align="center"> <img src="/Deployment/localhost_only/steps/step4.png" alt="Step 4"> </div>
 	
-	7) <div align="center"> <img src="/steps/step5.png" alt="Step 5"> </div>
+7) <div align="center"> <img src="/Deployment/localhost_only/steps/step5.png" alt="Step 5"> </div>
 	
-	8) <div align="center"> <img src="/steps/step6.png" alt="Step 6"> </div>
+8) <div align="center"> <img src="/Deployment/localhost_only/steps/step6.png" alt="Step 6"> </div>
 	
-	9) Change your .env file with your client_secret. Then run docker-compose up -d from your terminal.
-	This will relaunch Chess_Gateway with the correct Keycloak Client Secret.
-	Now you can check that everything works with in "localhost:8888/"
+9) Change your .env file with your client_secret. Then run docker-compose up -d from your terminal.
+This will relaunch Chess_Gateway with the correct Keycloak Client Secret.
+Now you can check that everything works with in "localhost:8888/"
 	
 # Extra notes
 
 The keycloak image is a custom one where I edited the registration.ftl, login.ftl, template.ftl 
-files to customize the registration fields, login output with my website.
+files to customize the registration fields, login output when you are redirected to Keycloak Authorization server Login.
 
 If you want your own realm then after making some changes you can export it from keycloak:8080 or from the terminal
 Here are the steps:
