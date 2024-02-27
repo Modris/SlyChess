@@ -73,6 +73,6 @@ build.xml
 
 *.toml.bak
 *.md.bak
-*.env
+
 
 Dockerfile.bak
