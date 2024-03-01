@@ -4,8 +4,7 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
-    #image: "modrisl/chess_gateway1.82_linux"
-    image: "modrisl/chess_gateway1.83_linux"
+    image: "modrisl/chess_gateway1.84_linux"
     container_name: "gateway_spring"
     ports:
       - 127.0.0.1:8888:8888
@@ -20,8 +19,7 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_healthy
-    #image:  modrisl/chess_backend1.364_linux
-    image:  modrisl/chess_backend1.4_linux
+    image:  modrisl/chess_backend1.43_linux
     container_name: "backend_spring"
     ports:
       - 127.0.0.1:9091:9091
@@ -52,8 +50,7 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_healthy
-    #image: modrisl/chess_manager2.85_linux
-    image: modrisl/chess_manager2.87_linux
+    image: modrisl/chess_manager2.88_linux
     container_name: "manager_spring"
     ports:
       - 127.0.0.1:8181:8181

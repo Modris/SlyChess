@@ -19,7 +19,7 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_healthy
-    image:  modrisl/chess_backend1.42
+    image:  modrisl/chess_backend1.43
     container_name: "backend_spring"
     ports:
       - 9091:9091
